@@ -1,5 +1,6 @@
 import {AppDispatch} from "../../store";
 import axios from "axios"
+import UserService from "../../../api/UserService";
 
 const initialState: AuthStateType = {
     isAuth: false,
@@ -67,18 +68,17 @@ export const AuthActionCreators = {
 
 
 // thunk
-    export
-const login = (username: string, password: string) => async (dispatch: AppDispatch) => {
+export const login = (username: string, password: string) => async (dispatch: AppDispatch) => {
     try {
         dispatch(AuthActionCreators.setIsLoadingAC(true))
         setTimeout(async () => {
-            const response = await axios.get<UserType[]>('./user.json')
+            const response = await UserService.getUsers()
             const mocKUser = response.data.find(user => user.username === username && user.password === password)
             if (mocKUser) {
                 localStorage.setItem("auth", "true")
                 localStorage.setItem("username", mocKUser.username)
-                dispatch(AuthActionCreators.setAuthAC(true))
                 dispatch(AuthActionCreators.setUserAC(mocKUser))
+                dispatch(AuthActionCreators.setAuthAC(true))
             } else {
                 dispatch(AuthActionCreators.setErrorAC("error name or password"))
             }
@@ -105,7 +105,7 @@ type AuthStateType = {
     isLoading: boolean,
     error: string
 }
-type UserType = {
+export type UserType = {
     username: string,
     password: string,
 
